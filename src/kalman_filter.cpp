@@ -60,14 +60,15 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
 
   // prediction error
 	VectorXd y = z - hx;
+  y[1] -= (2 * M_PI) * floor((y[1] + M_PI) / (2 * M_PI));
   UpdateY(y);
 }
 
 void KalmanFilter::UpdateY(const VectorXd &y) {
   MatrixXd Ht = H_.transpose();
-	MatrixXd S = H_ * P_ * Ht + R_;
+  MatrixXd PHt = P_ * Ht;
+	MatrixXd S = H_ * PHt + R_;
 	MatrixXd Si = S.inverse();
-	MatrixXd PHt = P_ * Ht;
 	MatrixXd K = PHt * Si;
 
 	//new estimate
